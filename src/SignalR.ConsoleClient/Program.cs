@@ -10,7 +10,7 @@ namespace SignalR.ConsoleClient
             Console.WriteLine("Hello World!");
 
             var connection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:61169/perf")
+                .WithUrl("http://localhost:8080/perf")
                 .WithConsoleLogger()
                 .Build();
 
@@ -31,6 +31,16 @@ namespace SignalR.ConsoleClient
             {
                 Console.WriteLine($"new broadcast size: {size}");
             });
+            connection.On<string>("connectionBehaviorChanged", behavior =>
+            {
+                Console.WriteLine($"connectionBehavior changed: {behavior}");
+            });
+
+
+            if (args.Length > 1 && args[0].ToLower() == "stop")
+            {
+                connection.SendAsync("StopBroadcast");
+            }
 
             string input = Console.ReadLine();
             while (!string.IsNullOrWhiteSpace(input))
@@ -39,11 +49,17 @@ namespace SignalR.ConsoleClient
 
                 switch (ss[0].ToLower())
                 {
-                    case "echo":
+                    case "echo": // server will echo back regardless of the ConnectionBehavior
                         connection.SendAsync("Echo", ss[1]);
                         break;
-                    case "broadcast":
+                    case "broadcast": // server will broadcast regardless of the ConnectionBehavior
                         connection.SendAsync("Broadcast", ss[1]);
+                        break;
+                    case "send": // server will Echo, Broadcast or do nothing in according to ConnectionBehavior
+                        connection.SendAsync("Send", ss[1]);
+                        break;
+                    case "behavior":
+                        connection.SendAsync("SetBehavior", ss[1]);
                         break;
                     case "rate":
                         if (int.TryParse(ss[1], out int rate))
@@ -60,7 +76,7 @@ namespace SignalR.ConsoleClient
                     case "start":
                         connection.SendAsync("StartBroadcast");
                         break;
-                    case "C":
+                    case "x":
                         connection.SendAsync("StopBroadcast");
                         break;
                     default:
