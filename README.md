@@ -9,6 +9,8 @@ The client, which is a simple tool to configure SignalR server, is located at `s
 
   - `echo XXX`: send message `XXX` to server and the server will echo back the message with a leading timestamp. `XXX` cannot be null or empty.
   - `broadcast XXX`: send message `XXX` to server and the server will broadcast the message to all clients with a leading timestamp. `XXX` cannot be null or empty.
+  - `send XXX`: send message `XXX` to server. Server will echo back, broadcast or do nothing in terms of the `ConnectionBehavior`.
+  - `behavior`: set the `ConnectionBehavior`. Its value has to be one of **ListenOnly**, **Echo**, **Broadcast**.
   - `rate SomeInteger`: set the server-side broadcast rate. It means *SomeInteger messages per second*. 
   - `szie someInteger`: set the server-side message size in bytes.
   - `start`: start the server-side broadcasting.
