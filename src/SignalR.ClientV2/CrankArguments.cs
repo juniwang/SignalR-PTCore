@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SignalR.Crank
+namespace SignalR.ClientV2
 {
     [CommandLineArguments(Program = "dotnet run")]
     internal class CrankArguments
