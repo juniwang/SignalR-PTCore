@@ -42,8 +42,8 @@ namespace SignalR.ClientV2
                         case "client":
                             Superviser.ClientOps(ss);
                             break;
-                        case "x":
-                            Superviser.ServerStopBroadcast();
+                        case "x": // a quick command for `server stop`
+                            Superviser.ConfigServer("server", "stop");
                             break;
                         case "v":
                             Arguments.Verbose = !Arguments.Verbose;

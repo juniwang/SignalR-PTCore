@@ -10,7 +10,6 @@ namespace SignalR.CoreHost
     {
         private static readonly string SuperviserGroupName = "Superviser";
         private static readonly string MethodServer = "Server";
-        private static readonly string MethodStat = "Stat";
         private static readonly string MethodEcho = "Echo";
         public static readonly string MethodBroadcast = "Broadcast";
 
@@ -34,9 +33,46 @@ namespace SignalR.CoreHost
         #endregion
 
         #region Server Config
+
+        public void ServerConfig(string action, string args)
+        {
+            switch (action)
+            {
+                case "behavior":
+                    SetBehavior(args);
+                    break;
+                case "size":
+                    if (int.TryParse(args, out int size) && size > 0)
+                    {
+                        SetBroadcastSize(size);
+                    }
+                    break;
+                case "rate":
+                    if (int.TryParse(args, out int rate) && rate > 0)
+                    {
+                        SetBroadcastRate(rate);
+                    }
+                    break;
+                case "start":
+                    StartBroadcast();
+                    break;
+                case "stop":
+                    StopBroadcast();
+                    break;
+                case "gc":
+                    ForceGC();
+                    break;
+                case "newlogfile":
+                    FileLogger.NewLogFile();
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public void SetBehavior(string behavior)
         {
-            if (Enum.TryParse(behavior, out ConnectionBehavior b))
+            if (Enum.TryParse(behavior, true, out ConnectionBehavior b))
             {
                 connectionBehavior = b;
                 Clients.Group(SuperviserGroupName).InvokeAsync(MethodServer, "Behavior",
@@ -85,7 +121,7 @@ namespace SignalR.CoreHost
 
         #endregion
 
-        #region Message
+        #region Client Message
         public async Task Echo(string message)
         {
             //Console.WriteLine("New echo message arrived:" + message);
@@ -127,6 +163,7 @@ namespace SignalR.CoreHost
         public void SendStat(PerfSample sample)
         {
             sample?.Print();
+            FileLogger.WriteToFile(sample);
         }
         #endregion
 

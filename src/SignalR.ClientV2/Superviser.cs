@@ -86,71 +86,15 @@ namespace SignalR.ClientV2
         #endregion
 
         #region Server-side broadcast operations
-        public static void ConfigServer(string[] args)
+        public static void ConfigServer(params string[] args)
         {
             if (args.Length < 2)
                 return;
 
-            switch (args[1])
-            {
-                case "behavior":
-                    ServerBehavior(args[2]);
-                    break;
-                case "size":
-                    if (int.TryParse(args[2], out int size) && size > 0)
-                    {
-                        ServerBroadcastSize(size);
-                    }
-                    break;
-                case "rate":
-                    if (int.TryParse(args[2], out int rate) && rate > 0)
-                    {
-                        ServerBroadcastRate(rate);
-                    }
-                    break;
-                case "start":
-                    ServerStartBroadcast();
-                    break;
-                case "x":
-                    ServerStopBroadcast();
-                    break;
-                case "gc":
-                    ServerGC();
-                    break;
-                default:
-                    break;
-            }
+            string action = args[1].ToLower();
+            string parameter = args.Length > 2 ? string.Join(",", args.Skip(2)) : string.Empty;
+            superviser.SendAsync("ServerConfig", action, parameter).Wait();
         }
-        private static void ServerBehavior(string behavior)
-        {
-            superviser.SendAsync("SetBehavior", behavior).Wait();
-        }
-
-        private static void ServerBroadcastSize(int size)
-        {
-            superviser.SendAsync("SetBroadcastSize", size).Wait();
-        }
-
-        private static void ServerBroadcastRate(int count)
-        {
-            superviser.SendAsync("SetBroadcastRate", count).Wait();
-        }
-
-        private static void ServerGC()
-        {
-            superviser.SendAsync("ForceGC").Wait();
-        }
-
-        private static void ServerStartBroadcast()
-        {
-            superviser.SendAsync("StartBroadcast").Wait();
-        }
-
-        public static void ServerStopBroadcast()
-        {
-            superviser.SendAsync("StopBroadcast").Wait();
-        }
-
         #endregion
 
         #region Superviser communication
@@ -225,6 +169,11 @@ namespace SignalR.ClientV2
                         Arguments.Broadcasters = bc;
                         Console.WriteLine($"Broadcaster number updated to {bc}");
                     }
+                    break;
+                case "gc":
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    Console.WriteLine("Force Client GC done.");
                     break;
                 default:
                     break;

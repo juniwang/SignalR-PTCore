@@ -7,6 +7,7 @@ namespace SignalR.CoreHost
 {
     public class PerfSample
     {
+
         public string Machine { get; set; }
         public string TestPhase { get; set; }
         public TimeSpan Elapsed { get; set; }
@@ -46,6 +47,27 @@ namespace SignalR.CoreHost
             {
                 return $"{ TotalMessageBytes / 1048576} MB";
             }
+        }
+
+        public static string FileHeader
+        {
+            get
+            {
+                return "Machine,TestPhase,Elapsed," +
+                    "ClientsConnected,MessageCount,MessageCountLessThan100," +
+                    "MessageCountLessThan250,MessageCountLessThan500,MessageCountLessThan1000," +
+                    "MessageCountLessThan2000,MessageCountGreaterThan2000,TotalMessageBytes," +
+                    "AvgSendLatencyMs,AvgRoundLatencyMs";
+            }
+        }
+
+        public string ToLine()
+        {
+            return $"{Machine},{TestPhase},{Elapsed}," +
+                $"{ClientsConnected},{MessageCount},{MessageCountLessThan100}," +
+                $"{MessageCountLessThan250},{MessageCountLessThan500},{MessageCountLessThan1000}," +
+                $"{MessageCountLessThan2000},{MessageCountGreaterThan2000},{TotalMessageBytes}," +
+                $"{AvgSendLatencyMs},{AvgRoundLatencyMs}";
         }
     }
 }
