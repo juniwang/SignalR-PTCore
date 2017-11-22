@@ -14,6 +14,7 @@ namespace SignalR.ClientV2
 
             Arguments = CrankArguments.Parse();
             ThreadPool.SetMinThreads(Arguments.Connections, 2);
+            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
             ConnectionFactory.SignalRServerUri = Arguments.Url;
 
             Initialize().Wait();
@@ -27,19 +28,25 @@ namespace SignalR.ClientV2
                     switch (ss[0].ToLower())
                     {
                         case "echo": // server will echo back regardless of the ConnectionBehavior
-                            Superviser.SuperviserEcho($"C{DateTime.UtcNow.Ticks.ToString()}|{ss[1]}");
+                            Superviser.TryEcho($"C{DateTime.UtcNow.Ticks.ToString()}|{ss[1]}");
                             break;
                         case "broadcast": // server will broadcast to all supervisers regardless of the ConnectionBehavior
-                            Superviser.SuperviserBroadcast($"C{DateTime.UtcNow.Ticks.ToString()}|{ss[1]}");
+                            Superviser.TryBroadcast($"C{DateTime.UtcNow.Ticks.ToString()}|{ss[1]}");
                             break;
                         case "send": // server will Echo, Broadcast or do nothing in according to ConnectionBehavior, supervisers only
-                            Superviser.SuperviserSend($"C{DateTime.UtcNow.Ticks.ToString()}|{ss[1]}");
+                            Superviser.TrySend($"C{DateTime.UtcNow.Ticks.ToString()}|{ss[1]}");
                             break;
                         case "server":
-                            Superviser.UpdateServer(ss);
+                            Superviser.ConfigServer(ss);
+                            break;
+                        case "client":
+                            Superviser.ClientOps(ss);
                             break;
                         case "x":
                             Superviser.ServerStopBroadcast();
+                            break;
+                        case "v":
+                            Arguments.Verbose = !Arguments.Verbose;
                             break;
                         default:
                             break;
@@ -59,13 +66,19 @@ namespace SignalR.ClientV2
         static async Task Initialize()
         {
             // start superviser
-            Superviser.CrankArguments = Arguments;
+            Superviser.Arguments = Arguments;
             await Superviser.CreateSuperviser();
         }
 
         static async Task Shutdown()
         {
             await Superviser.CloseSuperviser();
+        }
+
+        private static void OnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Console.WriteLine(e.Exception.GetBaseException());
+            e.SetObserved();
         }
     }
 }

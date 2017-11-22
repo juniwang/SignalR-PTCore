@@ -25,7 +25,7 @@ namespace SignalR.CoreHost
                     {
 
                         var payloadWithTimestamp = $"C{DateTime.UtcNow.Ticks.ToString()}|{_broadcastPayload}";
-                        context.Clients.All.InvokeAsync("broadcast", payloadWithTimestamp);
+                        context.Clients.All.InvokeAsync(PerfHub.MethodBroadcast, payloadWithTimestamp);
                     }
                 );
             });

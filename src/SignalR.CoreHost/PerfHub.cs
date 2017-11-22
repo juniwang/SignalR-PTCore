@@ -10,12 +10,9 @@ namespace SignalR.CoreHost
     {
         private static readonly string SuperviserGroupName = "Superviser";
         private static readonly string MethodServer = "Server";
-        private static readonly string MethodClient = "Client";
         private static readonly string MethodStat = "Stat";
         private static readonly string MethodEcho = "Echo";
-        private static readonly string MethodBroadcast = "Broadcast";
-        private static readonly string MethodSend = "Send";
-        private static readonly string MethodGroup = "Group";
+        public static readonly string MethodBroadcast = "Broadcast";
 
         private readonly PerfTicker perfTicker;
         private static ConnectionBehavior connectionBehavior = ConnectionBehavior.ListenOnly;
@@ -95,29 +92,41 @@ namespace SignalR.CoreHost
             await CurrentClient.InvokeAsync(MethodEcho, $"E{DateTime.UtcNow.Ticks.ToString()}|{message}");
         }
 
-        public async Task Broadcast(string group, string message)
+        public async Task Broadcast(string message, string group = null)
         {
-            //Console.WriteLine("New broadcast message arrived:" + message);
+            //Console.WriteLine($"New client message arrived:{message} for group: {group}");
             if (string.IsNullOrWhiteSpace(group))
                 await Clients.All.InvokeAsync(MethodBroadcast, $"B{DateTime.UtcNow.Ticks.ToString()}|{message}");
             else
                 await Clients.Group(group).InvokeAsync(MethodBroadcast, $"B{DateTime.UtcNow.Ticks.ToString()}|{message}");
         }
 
-        public async Task Send(string group, string message)
+        public async Task Send(string message, string group = null)
         {
-            //Console.WriteLine("New client message arrived:" + message);
+            //Console.WriteLine($"New client message arrived:{message} for group: {group}");
             switch (connectionBehavior)
             {
                 case ConnectionBehavior.Echo:
                     await Echo(message);
                     break;
                 case ConnectionBehavior.Broadcast:
-                    await Broadcast(group, message);
+                    await Broadcast(message, group);
                     break;
                 default:
                     break;
             }
+        }
+
+        public async Task Superviser(string action, string args)
+        {
+            await Clients.Group(SuperviserGroupName).InvokeAsync(SuperviserGroupName, action, args);
+        }
+        #endregion
+
+        #region Stat
+        public void SendStat(PerfSample sample)
+        {
+            sample?.Print();
         }
         #endregion
 

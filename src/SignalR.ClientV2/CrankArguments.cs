@@ -19,26 +19,26 @@ namespace SignalR.ClientV2
         [CommandLineParameter(Command = "Url", Required = false, Default = "http://localhost:8080/perf", Description = "Server URL for SignalR connections")]
         public string Url { get; set; }
 
-        [CommandLineParameter(Command = "BatchSize", Required = false, Default = 115, Description = "(Connect phase) Batch size for parallel connections. Default: 1 (batch disabled)")]
+        [CommandLineParameter(Command = "BatchSize", Required = false, Default = 1, Description = "(Connect phase) Batch size for parallel connections. Default: 1 (batch disabled)")]
         public int BatchSize { get; set; }
 
-        [CommandLineParameter(Command = "ConnectInterval", Required = false, Default = 1000, Description = "(Connect phase) Time in milliseconds between connection adds. Default: 10 ms")]
+        [CommandLineParameter(Command = "ConnectInterval", Required = false, Default = 1000, Description = "(Connect phase) Time in milliseconds between connection adds. Default: 1000 ms")]
         public int ConnectInterval { get; set; }
 
-        [CommandLineParameter(Command = "Connections", Required = false, Default = 1100, Description = "(Connect phase) Number of connections to open. Default: 100000")]
+        [CommandLineParameter(Command = "Connections", Required = false, Default = 1, Description = "(Connect phase) Number of connections to open. Default: 1")]
         public int Connections { get; set; }
 
-        [CommandLineParameter(Command = "ConnectTimeout", Required = false, Default = 300, Description = "(Connect phase) Timeout in seconds. Default: 300")]
-        public int ConnectTimeout { get; set; }
+        [CommandLineParameter(Command = "Broadcasters", Required = false, Default = 1, Description = "(Send phase) Number of connections which send out messages. Default: 1")]
+        public int Broadcasters { get; set; }
 
-        [CommandLineParameter(Command = "SendBytes", Required = false, Default = 0, Description = "(Send phase) Payload size in bytes. Default: 0 bytes (idle)")]
+        [CommandLineParameter(Command = "SendBytes", Required = false, Default = 50, Description = "(Send phase) Payload size in bytes. Default: 50 bytes")]
         public int SendBytes { get; set; }
 
         [CommandLineParameter(Command = "SendInterval", Required = false, Default = 500, Description = "(Send phase) Time in milliseconds between sends. Default: 500 ms")]
         public int SendInterval { get; set; }
 
-        [CommandLineParameter(Command = "SendTimeout", Required = false, Default = 600, Description = "(Send phase) Timeout in seconds. Default: 300")]
-        public int SendTimeout { get; set; }
+        [CommandLineParameter(Command = "Verbose", Required = false, Default = false, Description = "(all phases)Show or hide the console logs. Default: false")]
+        public bool Verbose { get; set; }
 
         public string Server
         {
