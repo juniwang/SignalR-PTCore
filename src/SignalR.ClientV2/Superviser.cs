@@ -40,13 +40,19 @@ namespace SignalR.ClientV2
             });
             superviser.On<string>(SR.MethodEcho, data =>
             {
-                var pt = data.Length > 50 ? data.Substring(0, 50) + "..." : data;
-                Console.WriteLine($"echo received: {pt}");
+                if (Arguments.Verbose)
+                {
+                    var pt = data.Length > 50 ? data.Substring(0, 50) + "..." : data;
+                    Console.WriteLine($"echo received: {pt}");
+                }
             });
             superviser.On<string>(SR.MethodBroadcast, data =>
             {
-                var pt = data.Length > 50 ? data.Substring(0, 50) + "..." : data;
-                Console.WriteLine($"broadcast received: {pt}");
+                if (Arguments.Verbose)
+                {
+                    var pt = data.Length > 50 ? data.Substring(0, 50) + "..." : data;
+                    Console.WriteLine($"broadcast received: {pt}");
+                }
             });
             superviser.On<string, string>(SR.SuperviserGroupName, (action, args) =>
             {
@@ -236,7 +242,7 @@ namespace SignalR.ClientV2
                 {
                     OnMessageReceived(data);
                 });
-                connection.On<string>(SR.MethodGroup, data =>
+                connection.On<string>(SR.MethodBroadcast, data =>
                 {
                     OnMessageReceived(data);
                 });

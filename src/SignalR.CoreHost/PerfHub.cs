@@ -12,6 +12,7 @@ namespace SignalR.CoreHost
         private static readonly string MethodServer = "Server";
         private static readonly string MethodEcho = "Echo";
         public static readonly string MethodBroadcast = "Broadcast";
+        private static readonly string MethodGroup = "Group";
 
         private readonly PerfTicker perfTicker;
         private static ConnectionBehavior connectionBehavior = ConnectionBehavior.ListenOnly;
@@ -27,7 +28,7 @@ namespace SignalR.CoreHost
             await Groups.AddAsync(Context.ConnectionId, groupName);
             if (groupName == SuperviserGroupName)
             {
-                await Clients.Group(groupName).InvokeAsync("Group", "Join", $"{Context.ConnectionId} joined in group `{groupName}`.");
+                await Clients.Group(groupName).InvokeAsync(MethodGroup, "Join", $"{Context.ConnectionId} joined in group `{groupName}`.");
             }
         }
         #endregion
@@ -61,9 +62,6 @@ namespace SignalR.CoreHost
                     break;
                 case "gc":
                     ForceGC();
-                    break;
-                case "newlogfile":
-                    FileLogger.NewLogFile();
                     break;
                 default:
                     break;
@@ -110,6 +108,7 @@ namespace SignalR.CoreHost
         public void StartBroadcast()
         {
             Console.WriteLine("Starting Broadcast...");
+            FileLogger.StartNewSession();
             perfTicker.Timer.Start();
         }
 
@@ -117,6 +116,7 @@ namespace SignalR.CoreHost
         {
             perfTicker.Timer.Stop();
             Console.WriteLine("Stop Broadcast...");
+            FileLogger.StopSession();
         }
 
         #endregion
@@ -155,6 +155,12 @@ namespace SignalR.CoreHost
 
         public async Task Superviser(string action, string args)
         {
+            // for send/idle(stop send), trigger Logger actions too
+            if (action == "send")
+                FileLogger.StartNewSession();
+            else if (action == "idle")
+                FileLogger.StopSession();
+
             await Clients.Group(SuperviserGroupName).InvokeAsync(SuperviserGroupName, action, args);
         }
         #endregion
@@ -163,7 +169,7 @@ namespace SignalR.CoreHost
         public void SendStat(PerfSample sample)
         {
             sample?.Print();
-            FileLogger.WriteToFile(sample);
+            FileLogger.LogSample(sample);
         }
         #endregion
 

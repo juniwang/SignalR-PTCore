@@ -104,7 +104,7 @@ namespace SignalR.ClientV2
                 }
             }
 
-            private bool ParseTicks(string ticks, out long sendLatency, out long roundLatency)
+            private bool ParseTicks(string message, out long sendLatency, out long roundLatency)
             {
                 sendLatency = 0;
                 roundLatency = 0;
@@ -114,6 +114,7 @@ namespace SignalR.ClientV2
                     long now = DateTime.UtcNow.Ticks;
                     long clientTicks = 0;
                     long serverTicks = 0;
+                    var ticks = message.Substring(0, Math.Min(60, message.Length));
                     //Console.WriteLine("N" + now.ToString() + "|" + ticks);
                     foreach (var tick in ticks.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
                     {
@@ -132,8 +133,15 @@ namespace SignalR.ClientV2
                         }
                     }
 
-                    sendLatency = serverTicks - clientTicks;
-                    roundLatency = now - clientTicks;
+                    if (clientTicks > 0)
+                    {
+                        roundLatency = now - clientTicks;
+                        if (serverTicks > 0)
+                        {
+                            sendLatency = serverTicks - clientTicks;
+                        }
+                    }
+                    //Console.WriteLine($"sendLatency:{sendLatency}, roundLatency:{roundLatency}");
                     return sendLatency >= 0 && roundLatency >= 0;
                 }
                 catch
