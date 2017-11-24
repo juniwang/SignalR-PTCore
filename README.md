@@ -11,7 +11,7 @@ The server actually can serve following requests:
 - Allow client to configure the server without any config file or downtime. For example, to change the server-side broadcasting rate and message size. The configurations are send via superviser connection.
 - Can forward all client configuration too. It's useful while you want to change the client configuration but you get multiple client VMs. Simply configure any of client VM, the change will be sent to server and then be broadcasted to all client VMs through superviser connections.
 
-SignalR server also writes the performance sample data to files. It will create a new file every time a session begins and stop writing on a session end. A session can a server-side broadcast or client echo/broadcast round trip.
+SignalR server also writes the performance sample data to files. It will create a new data file every time a session begins and stop writing on a session end. A session can a server-side broadcast or client echo/broadcast round trip.
 
 ## SignalR client
 The client, which is a command tool to configure SignalR server, is located at `src\SignalR.ClientV2`. Similarly you run `dotnet run` to start a client. Run in multiple commandLine will start mulliple clients. It accepts input parameters as the default value. But most of these parameters can be updated on the fly through the commandline. As above said, perform commands on any client VM is all you need to do. Following are the default startup arguments and supported commands. **Note that, this document might be out of sync since the source codes have been evolving**.
@@ -87,7 +87,7 @@ server start
 server stop
 ```
 
-#### Client round trip performance test via Echo
+#### Client round trip test via Echo
 Try performing following commands in client VM(**Note: you don't have to run all of them in every test. For example, you can connect the connections withou disconnecting them. So they are always here for use.**):
 ```
 server behavior Echo
@@ -100,7 +100,7 @@ client stop
 client disconnect
 ```
 
-#### Server-side broadcast performance test
+#### Client round trip test via Broadcast
 Try performing following commands in client VM:
 ```
 server behavior Broadcast
