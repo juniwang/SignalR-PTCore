@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using StackExchange.Redis;
 
 namespace SignalR.CoreHost
 {
@@ -18,7 +21,28 @@ namespace SignalR.CoreHost
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+            Enum.TryParse(configuration["SignalR:BackPlain"], out SignalRBackPlain backplain);
+            switch (backplain)
+            {
+                case SignalRBackPlain.Redis:
+                    var conn = configuration["Redis:connection"];
+                    services.AddSignalR().AddRedis(options =>
+                    {
+                        options.Factory = (textWriter) =>
+                        {
+                            return ConnectionMultiplexer.Connect(conn, textWriter);
+                        };
+                    });
+                    break;
+                default:
+                    services.AddSignalR();
+                    break;
+            }
+
             services.AddSingleton(typeof(PerfTicker));
             services.AddCors(options =>
             {
@@ -32,6 +56,8 @@ namespace SignalR.CoreHost
                             .AllowCredentials();
                     });
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

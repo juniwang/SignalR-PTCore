@@ -126,11 +126,11 @@ namespace SignalR.ClientV2
                     Console.WriteLine("disconnecting all clients...");
                     SignalPhaseChange(ControllerEvents.Disconnect);
                     break;
-                case "send":
+                case "start":
                     Console.WriteLine("Begin to send messages...");
                     SignalPhaseChange(ControllerEvents.Send);
                     break;
-                case "idle":
+                case "stop":
                     Console.WriteLine("Stop sending messages...");
                     SignalPhaseChange(ControllerEvents.Idle);
                     break;
