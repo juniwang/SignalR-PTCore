@@ -64,7 +64,10 @@ Only tested on Windows server. It should be working on Linux/MacOS too since it'
 Copy or clone source code, change directory to */src/SignalR.CoreHost* and run `dotnet run`. Say it's public DNS is *SomeDomain*.
 
 #### start a client
-Copy or clone source code, change directory to */src/SignalR.ClientV2* and run `dotnet run Url://http:SomeDomain:8080/perf`.
+Copy or clone source code, change directory to */src/SignalR.ClientV2* and run: 
+```
+dotnet run Url://http:SomeDomain:8080/perf
+```
 
 #### make sure it's ready for performance test
 Try following commands, you can open multiple clients to validate the broadcast:
