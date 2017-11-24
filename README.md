@@ -79,22 +79,28 @@ v
 ```
 
 #### Server-side broadcast performance test
-Try performing following commands in client VM:
+Try performing following commands in client VM(**Note: you don't have to run all of them in every test. For example, you can connect the connections withou disconnecting them. So they are always here for use.**):
 ```
+client batchsize 100
+client connections 1000
+client connect
 server rate 10
 server size 128
 server start
 server stop
+client disconnect
 ```
 
 #### Client round trip test via Echo
-Try performing following commands in client VM(**Note: you don't have to run all of them in every test. For example, you can connect the connections withou disconnecting them. So they are always here for use.**):
+Try performing following commands in client VM:
 ```
 server behavior Echo
 client batchsize 100
 client connections 1000
 client connect
 client sendbytes 128
+server gc
+client gc
 client start
 client stop
 client disconnect
@@ -104,11 +110,7 @@ client disconnect
 Try performing following commands in client VM:
 ```
 server behavior Broadcast
-client sendbytes 128
 client bc 5
-server gc
-client gc
 client start
 client stop
-client disconnect
 ```
