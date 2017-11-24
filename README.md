@@ -13,6 +13,9 @@ The server actually can serve following requests:
 
 SignalR server also writes the performance sample data to files. It will create a new data file every time a session begins and stop writing on a session end. A session can a server-side broadcast or client echo/broadcast round trip.
 
+### Scale out via Redis
+Open `appsettings.json` file, set `SignalR.Backplain` to `Redis` and set `Redis.connection` to the connection string of your redis server. For Azure Redis Cache, you can find the connection string on *Access keys* blade of your instance.
+
 ## SignalR client
 The client, which is a command tool to configure SignalR server, is located at `src\SignalR.ClientV2`. Similarly you run `dotnet run` to start a client. Run in multiple commandLine will start mulliple clients. It accepts input parameters as the default value. But most of these parameters can be updated on the fly through the commandline. As above said, perform commands on any client VM is all you need to do. Following are the default startup arguments and supported commands. **Note that, this document might be out of sync since the source codes have been evolving**.
 
